@@ -25,6 +25,7 @@ import numpy as np
 import pandas as pd
 import cv2
 import matplotlib.pyplot as plt
+from pathlib import Path
 
 from skimage.feature import graycomatrix, graycoprops, local_binary_pattern
 from sklearn.model_selection import train_test_split
@@ -36,6 +37,17 @@ from sklearn.metrics import classification_report, accuracy_score
 from sklearn.model_selection import StratifiedKFold, cross_val_score, cross_val_predict
 from sklearn.svm import SVC
 from sklearn.metrics import confusion_matrix
+
+# Kur bus saugomi paveikslai (Lab3)
+OUT_DIR = Path("lab3_outputs")
+OUT_DIR.mkdir(exist_ok=True)
+
+# Pagalbinė funkcija: išsaugo ir uždaro figūrą (be rodymo)
+def save_fig(fig, name):
+    out_path = OUT_DIR / name
+    fig.savefig(out_path, bbox_inches="tight", dpi=150)
+    plt.close(fig)
+    print(f"Išsaugota: {out_path}")
 
 # ----- Pagalbinės funkcijos -----
 
@@ -102,13 +114,14 @@ def plot_feature_bars(df_means, features=("contrast", "energy", "homogeneity", "
     for feat in features:
         if feat not in df_means.columns:
             continue
-        plt.figure()
+        fig = plt.figure()
         df_means[feat].plot(kind="bar")
         plt.title(f"Požymio '{feat}' vidurkis pagal tekstūrą")
         plt.xlabel("Tekstūra")
         plt.ylabel(feat)
         plt.tight_layout()
-        plt.show()
+        safe_name = feat.replace(" ", "_")
+        save_fig(fig, f"01_bars_{safe_name}.png")
 
 
 def main():
@@ -160,25 +173,25 @@ def main():
     # (Papildoma) LBP demonstracija pirmam vaizdui
     if first_img_for_lbp is not None:
         lbp_map, lbp_hist = compute_lbp_hist(first_img_for_lbp, P=8, R=1, method="uniform")
-        plt.figure()
+        fig_orig = plt.figure()
         plt.imshow(first_img_for_lbp, cmap="gray")
         plt.title(f"Originalus vaizdas: {os.path.basename(first_img_path)}")
         plt.axis("off")
-        plt.show()
+        save_fig(fig_orig, "10_originalus_pirmas.png")
 
-        plt.figure()
+        fig_lbp = plt.figure()
         plt.imshow(lbp_map, cmap="gray")
         plt.title("LBP tekstūros žemėlapis (P=8, R=1, 'uniform')")
         plt.axis("off")
-        plt.show()
+        save_fig(fig_lbp, "11_lbp_zemelapis.png")
 
-        plt.figure()
+        fig_lbp_hist = plt.figure()
         plt.plot(lbp_hist)
         plt.title("LBP histogramą (normalizuota)")
         plt.xlabel("LBP reikšmė")
         plt.ylabel("Dažnis")
         plt.tight_layout()
-        plt.show()
+        save_fig(fig_lbp_hist, "12_lbp_histograma.png")
 
     # Paprastas klasifikatorius su GLCM požymiais (jei turime >= 2 klasių)
     unique_labels = df["label"].unique()
@@ -236,6 +249,7 @@ def main():
         f"  Homogeniškumas:{example_row['homogeneity']:.3f}\n"
         f"  Koreliacija:   {example_row['correlation']:.3f}\n"
     )
+    print(f"Visi Lab3 paveikslai išsaugoti aplanke: {OUT_DIR.resolve()}")
 
 
 if __name__ == "__main__":

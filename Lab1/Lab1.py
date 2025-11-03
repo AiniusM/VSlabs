@@ -9,6 +9,17 @@ x, y = 50, 50                 # pikselio taškas (x, y) – gali keisti
 roi_x1, roi_y1 = 30, 30       # ROI viršutinis-kairys kampas
 roi_x2, roi_y2 = 130, 130     # ROI dešinys-apatinis kampas (neįskaitytinai)
 
+# Kur bus saugomi paveikslai
+OUT_DIR = Path("lab1_outputs")
+OUT_DIR.mkdir(exist_ok=True)
+
+# Pagalbinė funkcija: išsaugo ir uždaro figūrą (be rodymo)
+def save_fig(fig, name):
+    out_path = OUT_DIR / name
+    fig.savefig(out_path, bbox_inches="tight", dpi=150)
+    plt.close(fig)
+    print(f"Išsaugota: {out_path}")
+
 # === 2. Įkėlimas ===
 p = Path(IMAGE_PATH)
 if not p.exists():
@@ -30,7 +41,11 @@ print(f"Bitų gylis/kanalui: {bit_depth}")
 
 # Teisingas atvaizdavimas (matplotlib tikisi RGB, o cv2 pateikia BGR)
 img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
-plt.figure(); plt.imshow(img_rgb); plt.axis("off"); plt.title("Originalas (RGB)"); plt.show()
+fig1 = plt.figure()
+plt.imshow(img_rgb)
+plt.axis("off")
+plt.title("Originalas (RGB)")
+save_fig(fig1, "01_originalas_rgb.png")
 
 # === 3. Spalvų kanalai (R, G, B) – VIENAME PAVEIKSLE ===
 B, G, R = cv2.split(img_bgr)   # BGR tvarka
@@ -41,13 +56,17 @@ axes[1].imshow(G, cmap="gray"); axes[1].set_title("G kanalas"); axes[1].axis("of
 axes[2].imshow(B, cmap="gray"); axes[2].set_title("B kanalas"); axes[2].axis("off")
 fig.suptitle("R/G/B kanalai (pilkumo režimu)")
 plt.tight_layout()
-plt.show()
+save_fig(fig, "02_kanalai_rgb.png")
 
 print("Pastaba: šviesesnės vietos kanale reiškia didesnę to kanalo įtaką tose vaizdo vietose.")
 
 # === 4. Konvertavimas į grayscale ===
 gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
-plt.figure(); plt.imshow(gray, cmap="gray"); plt.axis("off"); plt.title("Grayscale"); plt.show()
+fig3 = plt.figure()
+plt.imshow(gray, cmap="gray")
+plt.axis("off")
+plt.title("Grayscale")
+save_fig(fig3, "03_grayscale.png")
 print("Informacija: iš 3 kanalų (R/G/B) → 1 kanalas (grayscale). Prarandam spalvą, lieka šviesumas.")
 
 # === 5. Pikselių prieiga ir ROI ===
@@ -74,7 +93,11 @@ print(f"B kanalo mean/std: {roi_B_mean:.2f} / {roi_B_std:.2f}")
 print(f"G kanalo mean/std: {roi_G_mean:.2f} / {roi_G_std:.2f}")
 print(f"R kanalo mean/std: {roi_R_mean:.2f} / {roi_R_std:.2f}")
 
-plt.figure(); plt.imshow(roi_gray, cmap="gray"); plt.axis("off"); plt.title("ROI (grayscale)"); plt.show()
+fig4 = plt.figure()
+plt.imshow(roi_gray, cmap="gray")
+plt.axis("off")
+plt.title("ROI (grayscale)")
+save_fig(fig4, "04_roi_grayscale.png")
 
 # === 6. Histogramos – VISOS VIENAME GRAFIKE ===
 plt.figure(figsize=(9, 5))
@@ -87,7 +110,7 @@ plt.xlabel("Intensyvumas (0–255)")
 plt.ylabel("Dažnis")
 plt.legend()
 plt.tight_layout()
-plt.show()
+save_fig(plt.gcf(), "05_histogramos.png")
 
 # Paprasta užuomina apie formą (vienkalnė/dviekalnė)
 hist_counts, _ = np.histogram(gray.ravel(), bins=256, range=(0, 256))
@@ -96,9 +119,9 @@ form_hint = "gali būti dviekalnė/mišri" if peaks > 4 else "link vienkalnės"
 print(f"Histogramos forma (grubiai): {form_hint}")
 
 # === 7. Formatai ir failo dydžiai ===
-out_png = Path("isvestis_png.png")
-out_j95 = Path("isvestis_q95.jpg")
-out_j60 = Path("isvestis_q60.jpg")
+out_png = OUT_DIR / "isvestis_png.png"
+out_j95 = OUT_DIR / "isvestis_q95.jpg"
+out_j60 = OUT_DIR / "isvestis_q60.jpg"
 
 cv2.imwrite(str(out_png), img_bgr)                          # PNG (lossless)
 cv2.imwrite(str(out_j95), img_bgr, [cv2.IMWRITE_JPEG_QUALITY, 95])  # JPEG Q=95
@@ -110,6 +133,7 @@ size_j60 = out_j60.stat().st_size / 1024
 print("\n=== 6) Failų dydžiai ===")
 print(f"PNG: {size_png:.1f} KB | JPEG Q95: {size_j95:.1f} KB | JPEG Q60: {size_j60:.1f} KB")
 print("Komentaras: JPEG – nuostolingas (mažesni failai, artefaktai su žemesne kokybe); PNG – nenuostolingas (tikslūs pikseliai).")
+print(f"Visi paveikslai ir eksportai išsaugoti aplanke: {OUT_DIR.resolve()}")
 
 # === 8. Santrauka ataskaitai (greiti atsakymai) ===
 mem_kb = w * h * channels * (bit_depth // 8) / 1024
@@ -117,4 +141,4 @@ print("\n=== Santrauka (į ataskaitą) ===")
 print("• RGB/BGR vs. Grayscale: RGB/BGR turi 3 kanalus (spalva), grayscale – 1 (šviesumas). Pereinant į grayscale prarandama spalva.")
 print(f"• Rezoliucija ir bitų gylis: {w}×{h}, {bit_depth} bit/kanalui, {channels} kanalai → ~{mem_kb:.1f} KB nekompresuotos atminties.")
 print(f"• Histogramos forma: {form_hint}. Plati/lygiai pasiskirsčiusi histograma → didesnis kontrastas; siaura → mažesnis.")
-print("• PNG vs. JPEG: PNG – nenuostolingas (gerai grafikoms/tekstui), JPEG – nuostolingas (gerai fotografijoms, mažesni failai).")
+print("• PNG vs. JPEG: PNG – nenuostolingas (gerai grafikams/tekstui), JPEG – nuostolingas (gerai fotografijoms, mažesni failai).")
