@@ -1,0 +1,6 @@
+1) Kraštinis (Snakes) jautresnis glotninimui ir pradinės kreivės padėčiai: per toli esant – gali nepritraukti.
+2) Regioninis (Chan–Vese) geriau veikia su neryškiais kraštais ir netolygiu apšvietimu, bet gali 'nutekėti' į foną jei klasės panašios.
+3) MGAC su 'balloon'>0 plečia ribas ir stabilesnis prie triukšmo, tačiau reikia tinkamai parinkti sigma/alpha potencialui.
+4) Triukšmas labiausiai kenkia kraštiniam metodui; median/gaussian filtrai pagerina konvergenciją.
+5) Didesnis glotnumas (beta/smoothing) padeda vengti dantytų ribų, bet gali perkelti kontūrą nuo tikslios sienos.
+6) Regioninį rinktis, kai kraštai silpni ir objektas skiriasi intensyvumu; kraštinį – kai ribos aiškios. MGAC – kai reikia balansuoti tarp abiejų.
