@@ -1,0 +1,58 @@
+Klausimai ataskaitai
+1. Kas yra atsitiktinis Markovo laukas ir kur jis taikomas?
+
+Atsitiktinis Markovo laukas (MRF) – tai toks modelis, kuris sako, kad kiekvieno pikselio reikšmė priklauso ne nuo viso vaizdo, o tik nuo jo kaimynų.
+Jis naudojamas ten, kur reikia tvarkingų, lygių sričių, pvz.:
+vaizdų segmentavime
+triukšmo šalinime
+kompiuterinėje regoje
+medicininiuose vaizduose
+
+Pikseliai šalia vienas kito dažniausiai priklauso tai pačiai klasei.
+
+2. Kuo skiriasi duomenų ir lygiškumo terminai energijos funkcijoje?
+
+Duomenų terminas (data term) žiūri, ar pikselio klasė atitinka jo intensyvumą.
+Pvz., jei pikselis šviesus, tai tikimasi, kad jo klasė bus „šviesi“.
+
+Lygiškumo terminas (smoothness) žiūri, ar pikselis sutinka su kaimynais.
+Jeigu labai skiriasi nuo kaimynų, pridedama bauda.
+
+Paprastai sakant:
+data term = kiek pikselis atitinka originalų vaizdą
+smoothness term = kiek jis sutaria su kaimynais
+
+3. Kodėl Potts modelis dažnai naudojamas vaizdų segmentavimui?
+
+Nes jis labai paprastas ir veikia gerai.
+Potts modelis tiesiog sako:
+
+Jei du kaimynai turi skirtingas klases – blogai, pridedam baudą.
+
+Čia nereikia sudėtingų tikimybių, greita skaičiuoti, tinka 2 ar daugiau klasių segmentavimui.
+Todėl jis populiarus kaip bazinis MRF modelis.
+
+4. Kaip β parametras veikia segmentacijos rezultatą?
+
+β nusako, kiek stipriai mes tikime lygiškumu (smoothness).
+Mažas β - mažai bausmių - triukšminga segmentacija
+Vidutinis β - geras balansas
+Didelis β - labai išlygintas vaizdas, prarandamos detalės
+
+Trumpai:
+β mažas - chaosas
+β normalus - gražu
+β per didelis - per daug išlyginta
+
+5. Kokie yra MRF privalumai ir trūkumai, palyginti su paprastu slenksčiu?
+
+Privalumai:
+daug mažiau triukšmo
+regionai tampa vientisesni
+naudojama informacija iš kaimynų
+segmentacija geresnė ir gražesnė
+
+Trūkumai:
+lėtesnis nei paprastas slenkstis
+reikia derinti parametrus (β, kaimynystę)
+kartais gali įstrigti lokaliame minime (ICM nėra tobulas)
