@@ -1,0 +1,13 @@
+image,variant,method,area(px),n_objects
+coins,clean,classic,116352,17505
+coins,clean,marker,57869,46
+coins,clean,grad,57869,46
+coins,noisy,classic,116352,20583
+coins,noisy,marker,68168,47
+coins,noisy,grad,68168,47
+coins,gaussian_filtered,classic,116352,13598
+coins,gaussian_filtered,marker,57384,46
+coins,gaussian_filtered,grad,57384,46
+coins,median_filtered,classic,116352,14294
+coins,median_filtered,marker,58416,49
+coins,median_filtered,grad,58416,49

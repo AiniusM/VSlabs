@@ -1,0 +1,7 @@
+IŠVADOS:
+1) Klasikinė watershed (be žymeklių) dažniausiai persegmentuoja, nes kiekvienas mažas gradiento minimumas tampa atskiru baseinu.
+2) Marker-based watershed stabilizuoja segmentaciją: objektų skaičius labiau atitinka realius objektus, ypač kai objektai atskiriami per distance transform.
+3) Gradient-based marker-controlled watershed dažnai duoda tikslesnes ribas, bet triukšmas padidina gradientų netolygumą, todėl metodas tampa jautresnis be filtravimo.
+4) Keičiant peak_local_max footprint: per mažas footprint -> per daug seed'ų -> objektai 'susprogsta' į daug segmentų; per didelis footprint -> per mažai seed'ų -> objektai susijungia.
+5) Triukšmui dažniausiai jautriausia gradient-based schema; median/gaussian filtrai sumažina klaidingų ribų skaičių ir stabilizuoja seed'ų paiešką.
+6) Praktikoje: jei prioritetas – teisingas objektų skaičius, rinktis marker-based; jei prioritetas – tikslios ribos ir yra filtravimas, rinktis gradient-based.
